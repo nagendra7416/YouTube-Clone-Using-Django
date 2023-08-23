@@ -9,27 +9,34 @@ $(document).ready(function(){
 
 
 
-const menubtn = document.querySelector('.menu button');
+const menbtn = document.querySelector('.menu button');
 const overlay = document.querySelector('.hiddensidebar');
 const hiddenclose = document.getElementById('hiddensidebarclose');
 const overlayclose = document.getElementById('closebtn');
 
+if(menbtn){
+	menbtn.addEventListener('click', function(){
+		overlay.classList.toggle('active');
+		hiddenclose.classList.toggle('active');
+		overlayclose.classList.toggle('active');
+	})
+}
 
-menubtn.addEventListener('click', function(){
-	overlay.classList.toggle('active');
-	hiddenclose.classList.toggle('active');
-	overlayclose.classList.toggle('active');
-})
-hiddenclose.addEventListener('click', function(){
-	overlay.classList.toggle('active');
-	overlayclose.classList.toggle('active');
-	hiddenclose.classList.toggle('active');
-})
-overlayclose.addEventListener('click', function(){
-	overlay.classList.toggle('active');
-	overlayclose.classList.toggle('active');
-	hiddenclose.classList.toggle('active');
-})
+if(hiddenclose){
+	hiddenclose.addEventListener('click', function(){
+		overlay.classList.toggle('active');
+		overlayclose.classList.toggle('active');
+		hiddenclose.classList.toggle('active');
+	})
+}
+if(overlayclose){
+	overlayclose.addEventListener('click', function(){
+		overlay.classList.toggle('active');
+		overlayclose.classList.toggle('active');
+		hiddenclose.classList.toggle('active');
+	})
+}
+
 
 
 

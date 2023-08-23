@@ -169,6 +169,8 @@
 
 
 {% include 'sidebar.html' %}
+{% include 'hiddensidebar.html' %}
+
 
 <div class="main-scroll">
     <div class="channelcon">
@@ -184,6 +186,7 @@
                         </div>
                         <div class="channel-name">
                             <h4>{{channel.channelname}}</h4>
+                            <h6 style="margin-bottom: 8px; color: gray; font-weight: 400; font-size: 13px;">@{{channel.channelslug}}</h6>
                             <label>
                                 <span>
                                     {{channel.subscribers.count}}
@@ -195,10 +198,10 @@
                     <div class="right">
                         {% csrf_token %}
                         {% if request.user in channel.subscribers.all %}
-                            <button id="subscribed" onclick="unsubscribe(this)" data-channel_id="{{channel.channelname}}">Subscribed</button>
+                            <button id="subscribed" onclick="unsubscribe(this)" data-channelslug="{{channel.channelslug}}">Subscribed</button>
                             <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none;"><g class="style-scope yt-icon"><path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V3.96 c0-1.42,1.49-2.5,2.99-1.76C13.64,2.52,14,3.23,14,3.96l0,0.39c2.44,0.75,4,3.06,4,5.98v5.15L20,17.35z M19,17.77l-2-1.88v-5.47 c0-2.47-1.19-4.36-3.13-5.1c-1.26-0.53-2.64-0.5-3.84,0.03C8.15,6.11,7,7.99,7,10.42v5.47l-2,1.88V18h14V17.77z" class="style-scope yt-icon"></path></g></svg>
                         {% else %}
-                            <button onclick="subscribe(this)" data-channel_id="{{channel.channelname}}">Subscribe</button>
+                            <button onclick="subscribe(this)" data-channelslug="{{channel.channelslug}}">Subscribe</button>
                         {% endif %}
                     </div>
                 </div>

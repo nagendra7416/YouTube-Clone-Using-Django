@@ -1,6 +1,7 @@
 {% extends 'channel/channel.html' %}
 {% load static %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block channel %}
 <div class="buttons">
@@ -65,7 +66,7 @@
                 <div class="line"></div>
                 <span>Joined {{request.user.channeluser.joined | date:"M d, Y"}}</span>
                 <div class="line"></div>
-                <span>{{count | intcomma}} views</span>
+                <span>{{count|format_views_as_comma}} views</span>
             </div>
         </div>
     </div>

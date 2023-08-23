@@ -3,12 +3,120 @@
 {% load humanize %}
 {% block title %}<title>{{video.title}} - YouTube</title>{% endblock %}
 {% block content %}
+{% load custom_filters %}
+
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 
 
+    body.dark .main .main-scroll 
+    {
+        background: #0f0f0f;
+    }
+    body.dark .videocon .left .title h3
+    {
+        color: #d0d0d0;
+    }
+    body.dark .subcon .subleft .subdetail h5
+    {
+        color: #d2d2d2;
+    }
+    body.dark .subcon .subleft .subdetail label
+    {
+        color: #919191;
+    }
+    body.dark .subcon .subright button
+    {
+        background: white;
+        color: black;
+    }
+    body.dark .videocon .likecon .con
+    {
+        background: #272727;
+    }
+    body.dark .videocon .likecon .con svg
+    {
+        fill: #d6d6d6;
+    }
+    body.dark .videocon .likecon .con label
+    {
+        color: #d6d6d6;
+    }
+    body.dark .videocon .left .desc
+    {
+        background: #272727;
+        transition: .3s;
+        color: #dedede;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    body.dark .videocon .left .desc:hover 
+    {
+        background: #3f3f3f;
+        transition: 0.3s;
+    }
+    body.dark .videocon .left .desc #viewcon
+    {
+        color: #dedede;
+    }
+    .videocon .left .desc #viewcon label
+    {
+        margin-bottom: 10px;
+    }
+    body.dark .videocon .left .desc p
+    {
+        color: #dedede;
+    }
+    body.dark .videocon .left .desc button
+    {
+        color: #dedede;
+    }
+
+    body.dark .commentcount label 
+    {
+        color: #dedede;
+    }
+    body.dark .usercomment .userinput input
+    {
+        color: white;
+        border-bottom: 1px solid #1f1f1f;
+    }
+    body.dark .publicdetail .head a
+    {
+        color: #dddddd;
+    }
+    body.dark .publicdetail p
+    {
+        color: #dddddd;
+    }
+    body.dark .publicdetail .head span
+    {
+        color: #aaa;
+    }
+    body.dark .likescon .like button svg
+    {
+        fill: #dedede;
+    }
+    body.dark .likescon .like button label
+    {
+        color: #dedede;
+    }
+    body.dark .likescon .reply button
+    {
+        color: #dedede;
+    }
+    body.dark .main .main-scroll form button svg 
+    {
+        fill: #dedede;
+    }
+
+    body.dark .right-inner .videos .video .video-detail h4
+    {
+        color: #dedede;
+    }
 
 
     *
@@ -24,6 +132,7 @@
     .main .main-scroll 
     {
         width: 100%;
+        background: #ffffff;
     }
     .main .main-scroll .inner 
     {
@@ -94,7 +203,7 @@
         margin-top: 5px;
         background: #f2f2f2;
         padding: 8px;
-        border-radius: 4px;
+        border-radius: 12px;
     }
     .videocon .left .desc p
     {
@@ -102,7 +211,7 @@
         line-height: 20px;
         font-weight: 400;
         color: #0f0f0f;
-        height: 45px;
+        height: 43px;
         background: ;
         overflow: hidden;
     }
@@ -533,7 +642,7 @@
     .likescon .like 
     {
         height: 25px;
-        margin-right: 10px;
+        margin-right: 20px;
     }
     .likescon .like button
     {
@@ -990,10 +1099,14 @@
 
 
 </style>
-<div class="main-scroll" style="background: #ffffff;">
-    <div class="inner">
+
+
+
+<div class="main-scroll" style="">
+    <div class="inner" video-id="{{id}}" onload="comments_load(this)">
         <div class="videocon">
             <div class="left">
+                {% if video.video %}
                 <div class="video-con paused" data-volume-level="high">
                     <img class="thumbnail-img">
                     <div class="video-controls-container">
@@ -1061,15 +1174,24 @@
                             </button>
                         </div>
                     </div>
-                    <video src="{{video.video.url}}">
-                        <track kind="captions" srclang="en" src="">
-                    </video>
+                    {% if video.video %}
+                        <video src="{{video.video.url}}" id="videosrcurl" autoplay unmuted loop>
+                            <track kind="captions" srclang="en" src="">
+                        </video>
+                    {% else %}
+                        Video Doesn't Exist
+                    {% endif %}
                 </div>
+                {% else %}
+                    <div style="width: 100%; height: 420px; display: flex; align-items: center; justify-content: center; background: black; color: white;">
+                        <label>Video doesn't exist</label>
+                    </div>
+                {% endif %}
                 <div class="title">
                     <h3>{{video.title}}</h3>
                 </div>
                 {% comment %} <div class="views">
-                    <span>{{video.watched}} views {{video.published | date:"M d, Y"}}</span>
+                    <span>{{video.views}} views {{video.published | date:"M d, Y"}}</span>
                 </div> {% endcomment %}
                 <div class="bothcon">
                     <div class="likecon">
@@ -1141,9 +1263,15 @@
                     </div>
                 </div>
                 <div class="desc">
-                    <span><label id="views">{{video.watched}}</label> <label id="timeago">{{video.published | date:"Y-m-d H:i:s"}}</label></span>
-                    <span>{{video.description | safe | linebreaks}}</span>
-                    <button>SHOW MORE</button>
+                    <span id="viewcon">{{video.views|format_views_as_comma}} views &bull;&nbsp;<label>{{video.published|time_ago}}</label></span>
+                    {% if video.description %}
+                    <span style="margin-bottom: 8px;">{{video.description | safe | linebreaks}}</span>
+                    {% else %}
+                        <span style="margin-bottom: 8px;">
+                            <p>No Description</p>
+                    </span>
+                    {% endif %}
+                    <button></button>
                 </div>
                 <div class="commentcount" style="margin-top: 20px;">
                     <label><span>{{comments.count}}</span> Comments</label>
@@ -1156,7 +1284,7 @@
                     <div class="userinput">
                         <form action="{% url 'watch' video.id %}" method="POST" id="commentform">
                             {% csrf_token %}
-                            {{commentform.id}}
+                            {% comment %} {{commentform.id}} {% endcomment %}
                             {% comment %} {{commentform.comment_id}} {% endcomment %}
                             {{commentform.comment_video}}
                             {{commentform.comment_user}}
@@ -1166,6 +1294,9 @@
                         </form>
                     </div>
                 </div>
+
+
+
                 <div class="publiccomments">
                     <div class="commentloader">
                         <label></label>
@@ -1185,7 +1316,7 @@
                                             {% else %}
                                                 <a href="{% url 'author_channel' comment.comment_user.channeluser.channelname %}">{{comment.comment_user.channeluser.channelname}}</a>
                                             {% endif %}
-                                            <span id="timeago">{{comment.commented_on | date:"Y-m-d H:i:s"}}</span>
+                                            <span>{{comment.commented_on|time_ago}}</span>
                                         </div>
                                         <p>{{comment.comment_body}}</p>
                                         <div class="likescon" data-video="{{video.id}}" data-comment="{{comment.comment_id}}">
@@ -1257,7 +1388,7 @@
                                                 {% else %}
                                                     <a href="{% url 'author_channel' child.comment_user.channeluser.channelname %}">{{child.comment_user.channeluser.channelname}}</a>
                                                 {% endif %}
-                                                <span id="timeago">{{child.commented_on | date:"Y-m-d H:i:s"}}</span>
+                                                <span>{{child.commented_on|time_ago}}</span>
                                             </div>
                                             <p>{{child.comment_body}}</p>
                                             {% comment %} <div class="likescon" data-video="{{video.id}}" data-comment="{{child.pk}}">
@@ -1298,26 +1429,23 @@
                 <div class="right-inner">
                     <div class="videos">
                         {% for vid in videos %}
-                            {% comment %} <form action="{% url 'watch' %}" method="GET">
-                                <button name="v" value="{{vid.id}}"> {% endcomment %}
+                            
                                     <div class="video">
                                         <a href="{% url 'watch' vid.id %}">
                                         <div class="video-img">
                                             <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{vid.image.url}}">
-                                            <span id="videourl" video-id="{{vid.video.url}}">
-                                                <p></p>
-                                                <video src="{{vid.video.url}}"></video>
+                                            <span id="videourl">
+                                                <p>{{vid.duration}}</p>
                                             </span>
                                         </div>
                                         <div class="video-detail">
                                             <h4>{{vid.title}}</h4>
                                             <a href="#">{{vid.author.channeluser.channelname}}</a>
-                                            <span><label id="views">{{vid.watched}}</label> &bull; <label id="timeago">{{vid.published | date:"Y-m-d H:i:s"}}</label></span>
+                                            <span><label>{{vid.views|format_views_as_K}} views</label> &bull; <label>{{vid.published|time_ago}}</label></span>
                                         </div>
                                     </a>
                                     </div>
-                                {% comment %} </button>
-                            </form> {% endcomment %}
+                                
                         {% endfor %}
                     </div>
                 </div>
@@ -1327,7 +1455,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
-<script src="{% static 'js/script.js' %}"></script>
+
 <script type="text/javascript">
     var descbutton = document.querySelector('.desc button');
     var desc = document.querySelector('.desc p');
@@ -1337,71 +1465,58 @@
     })
     descbutton.addEventListener('click', function(){
         desc.classList.toggle('active');
-        if(descbutton.innerHTML == 'SHOW MORE'){
+        if(descbutton.innerHTML == ''){
             descbutton.innerHTML = 'SHOW LESS';
         } else {
-            descbutton.innerHTML = 'SHOW MORE';
+            descbutton.innerHTML = '';
         }
     })    
-</script>
-<script>
+
     var comment_user = document.getElementById('id_comment_user');
     comment_user.value = "{{request.user.id}}";
 
     var comment_video = document.getElementById('id_comment_video');
     comment_video.value = "{{video.id}}";
-</script>
 
-<script>
-    var commentdelete = document.querySelectorAll('#commentdelete');
-    for(let i=0; i<commentdelete.length; i++){
-        commentdelete[i].addEventListener('submit', function(e){
-            e.preventDefault();
-        })
+    var commentdeletes = document.querySelectorAll('#commentdelete');
+    if(commentdeletes){
+        for(let i=0; i<commentdeletes.length; i++){
+            commentdeletes[i].addEventListener('submit', function(e){
+                e.preventDefault();
+            })
+        }
     }
-{% comment %} var replybtn = document.querySelectorAll('#replybtn');
-var likebottom = document.querySelectorAll('.likebottom');
-var cancelbtn = document.querySelectorAll('#cancel');
+    
+    var commentoptions = document.querySelectorAll('.commentoptions');
 
-for(let i=0; i<replybtn.length; i++){
-    replybtn[i].addEventListener('click', function(){
-        likebottom[i].classList.toggle('active');
-        var value = this.parentElement.parentElement.parentElement.dataset.comment; 
-        document.getElementById('id_parent').value = value;
+    var commentoptionsbtn = document.querySelectorAll('#commentdelete button');
+
+    commentoptionsbtn.forEach((button, index) => {
+        button.addEventListener('click', () => {
+
+            if(button.classList.contains('active')){
+                button.classList.remove('active');
+                commentoptions[index].classList.remove('active');
+            } else {
+                commentoptionsbtn.forEach(btn => btn.classList.remove('active'));
+                commentoptions.forEach(content => content.classList.remove('active'));
+
+                button.classList.add('active');
+                commentoptions[index].classList.add('active');
+            }
+        })
     })
-    cancelbtn[i].addEventListener('click', function(){
-        likebottom[i].classList.remove('active');
-    })
-} {% endcomment %}
 
-var commentoptions = document.querySelectorAll('.commentoptions');
-var commentoptionsbtna = document.querySelectorAll('#commentdelete a');
-
-for(let i=0; i<commentoptionsbtna.length; i++){
-    commentoptionsbtna[i].addEventListener('click', function(){
-        commentoptions[i].classList.toggle('active');
-    })
-}
-
-var commentoptionsbtn = document.querySelectorAll('#commentdelete button');
-
-for(let i=0; i<commentoptionsbtn.length; i++){
-    commentoptionsbtn[i].addEventListener('click', function(){
-        commentoptions[i].classList.toggle('active');
-    })
-}
+    
 
 
-function commentopt(element){
-    var elem = element.parentElement.querySelector('.commentoptions');
-    elem.classList.toggle('active');
-}
+    function commentopt(element){
+        var elem = element.parentElement.querySelector('.commentoptions');
+        elem.classList.toggle('active');
+    }
 
 
 
-</script>
-
-<script>
     function watchsub(element){
         let name = element.dataset.channel_id;
         let id = element.dataset.video_id;
@@ -1457,9 +1572,9 @@ function commentopt(element){
                 }
             })
     }
-
     function comment(){
         var commentform = document.getElementById('commentform');
+
         commentform.addEventListener('submit', function(e){
             e.preventDefault();
 
@@ -1581,59 +1696,53 @@ function commentopt(element){
     }
     comment();
 
-const uniqueId = (length=16) => {
-    return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(length).toString().replace(".", ""))
-}
+    {% comment %} $('#commentform').submit(function(event) {
+        event.preventDefault();
+        
+        var formDataArray = $(this).serializeArray(); // Serialize the form data
+        var url = $(this).attr('action');
+        // Deserialize the serialized data into an object
+        var formDataObject = {};
+        formDataArray.forEach(function(field) {
+            formDataObject[field.name] = field.value;
+        });
 
-window.onload = function(){
-    function commenttime(){
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth()+1;
-        var year = date.getFullYear();
-        var h = date.getHours() % 12 || 12;
-        var m = date.getMinutes();
-        var s = date.getSeconds();
-        if (h < 10){ h = "0" + h}
-        if (m < 10){ m = "0" + m}
-        if (s < 10){ s = "0" + s}
-        var thistime = year+"-"+month+"-"+day+" "+h+":"+m+":"+s;
-        return thistime;
+        var commentBody = formDataArray;
+        console.log(commentBody);
+        
+        $.ajax({
+            type: 'POST',
+            url: url,  // Update with your Django view URL
+            data: formDataArray,
+            success: function(response) {
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }); {% endcomment %}
+
+    const uniqueId = (length=16) => {
+        return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(length).toString().replace(".", ""))
     }
-}
 
 
-
-</script>
-
-<script>
-function qwe(){
-    var replybtni = document.querySelectorAll('#replybtni');
-    var likebottomi = document.querySelectorAll('.likebottomi');
-    for(let i=0; i<replybtni.length; i++){
-        replybtni[i].onclick = function(){
-            likebottomi[i].classList.toggle('active');
+    function qwe(){
+        var replybtni = document.querySelectorAll('#replybtni');
+        var likebottomi = document.querySelectorAll('.likebottomi');
+        for(let i=0; i<replybtni.length; i++){
+            replybtni[i].onclick = function(){
+                likebottomi[i].classList.toggle('active');
+            }
         }
     }
-}
 
 
 
-function formsubmit(e){
-    e.preventDefault();
-}
-</script>
+    function formsubmit(e){
+        e.preventDefault();
+    }
 
-
-
-
-
-
-
-
-
-
-<script>
     const playPauseBtn = document.querySelector(".play-pause-btn")
     const theaterBtn = document.querySelector(".theater-btn")
     const fullScreenBtn = document.querySelector(".full-screen-btn")
@@ -1870,50 +1979,6 @@ function formsubmit(e){
     video.onended = (event) => {
         console.log('Video stopped either because 1) it was over, ' +'or 2) no further data is available.');
     };
-    
-</script>
-
-
-
-
-<script>
-    var commentdelete = document.getElementById('commentdelete');
-    commentdelete.addEventListener('submit', function(e){
-        e.preventDefault();
-    })
-</script>
-
-
-
-<script>
-function fetchlikecount(){
-    id = "{{video.id}}";
-    $.ajax({
-        url: `${id}/likes_count`,
-        type: 'GET',
-        dataType: 'json',
-        success: function(response){
-            document.querySelector('.likecon .like label').innerHTML = response.likes_count;
-        }
-    })
-}
-
-setInterval(fetchlikecount, 1000);
-
-
-{% comment %} function getcomments(){
-    id = "{{video.id}}";
-    $.ajax({
-        url: `${id}/comments`,
-        method: 'GET',
-        dataType: 'json', 
-        success: function(response){
-
-        }
-    })
-}
-setInterval(getcomments, 1000); {% endcomment %}
-
 </script>
 
 

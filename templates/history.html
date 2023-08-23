@@ -1,13 +1,53 @@
 {% extends 'index.html' %}
 {% load static %}
 {% load humanize %}
-
+{% load custom_filters %}
 
 {% block content %}
 
-
-
 <style>
+
+
+    @media screen and (max-width: 796px){
+        .main .main-scroll .inner
+        {
+            width: 100%;
+        }
+    }
+    @media screen and (min-width: 796px){
+        .main .main-scroll .inner
+        {
+            width: 80%;
+        }
+    }
+
+    body.dark #watchhistoryh5
+    {
+        color: white;
+    }
+    body.dark .explorecon .explore .rightdetail h3
+    {
+        color: #f1f1f1;
+    }
+    body.dark .explorecon .explore .rightdetail .author a
+    {
+        color: #aaa;
+    }
+    body.dark .explorecon .explore .rightdetail .author span
+    {
+        color: #aaa;
+    }
+
+
+
+
+
+
+
+
+
+
+
     .explores .explore .leftimg
     {
         position: relative;
@@ -130,39 +170,42 @@
 
 
 {% include 'sidebar.html' %}
+{% include 'hiddensidebar.html' %}
+
+
 {% block title %}<title>History - YouTube</title>{% endblock %}
 <div class="main-scroll">
     <div class="inner">
         <div class="explorecon">
-            <h5 id="watchhistoryh5">History</h5>
-            {% if users %}
-                {% for video in users %}
-                    <div class="explores">
-                        
-                                <div class="explore">
-                                    <a href="{% url 'watch' video.id %}">
+            <h5 id="watchhistoryh5">Watch history</h5>
+
+
+
+            {% if hisvideos %}
+                {% for hisvideo in hisvideos %}
+                        <div class="explores">
+                            <div class="explore">
+                                <a href="">
                                     <div class="leftimg">
-                                        <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
-                                        <span id="videourl" video-id="{{video.video.url}}">
-                                            <p></p>
-                                            <video src="{{video.video.url}}"></video>
+                                        <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{hisvideo.his_video.image.url}}">
+                                        <span>
+                                            <p>{{hisvideo.his_video.duration}}</p>
                                         </span>
                                     </div>
                                     <div class="rightdetail">
-                                        <h3>{{video.title}}</h3>
+                                        <h3>{{hisvideo.his_video.title}}</h3>
                                         <div class="author">
-                                            <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
-                                            <span><span id="views" style="margin: 0 5px;">{{video.watched}}</span> &bull; <span id="timeago">{{video.published | date:"Y-m-d H:i:s" }}</span></span>
+                                            <a href="">{{hisvideo.his_video.author.channeluser.channelname}}</a>
+                                            <span>&nbsp;&bull;<span style="margin: 0 5px;">{{hisvideo.his_video.views|format_views_as_K}} views</span> &bull; <span>{{hisvideo.his_video.published|time_ago}}</span></span>
                                         </div>
                                         <p>{{video.description}}</p>
                                     </div>
                                 </a>
-                                </div>
-                            
-                    </div>
+                            </div>        
+                        </div>
                 {% endfor %}
             {% else %}
-                <p style="width: 100%; text-align: center;">No Watch History Found</p> 
+                <p style="width: 100%; text-align: center;">No Watch History Found</p>
             {% endif %}
         </div>
     </div>

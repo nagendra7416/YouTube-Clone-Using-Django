@@ -1,8 +1,27 @@
 {% extends 'channel/channel.html' %}
 {% load static %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block channel %}
+
+<style>
+    .channel-inner .posts .post-inner .post .post-img
+    {
+        position: relative;
+    }
+    .channel-inner .posts .post-inner .post .post-img label
+    {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        font-size: 11px;
+        padding: 3px 5px;
+    }
+</style>
+
 <div class="buttons">
     <button>
         <a href="{% url 'channel' request.user.channeluser.id %}">
@@ -46,11 +65,12 @@
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
                                 <img src="{{uservideo.image.url}}">
+                                <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="#">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.watched}}</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s"}}</span></span>
+                                <span><span>{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>
@@ -68,11 +88,12 @@
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
                                 <img src="{{uservideo.image.url}}">
+                                <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="#">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.watched}}</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s"}}</span></span>
+                                <span><span>{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>    

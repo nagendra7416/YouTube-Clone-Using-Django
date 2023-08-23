@@ -278,6 +278,7 @@
 
 
 {% include 'sidebar.html' %}
+{% include 'hiddensidebar.html' %}
 
 <div class="main-scroll">
     <div class="channelcon">
@@ -289,10 +290,11 @@
                 <div class="channel-header">
                     <div class="left">
                         <div class="channel-img">
-                            <img src="{{request.user.channeluser.channelimg.url}}">
+                            <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{request.user.channeluser.channelimg.url}}">
                         </div>
                         <div class="channel-name">
                             <h4>{{request.user.channeluser.channelname}}</h4>
+                            <h6 style="">@{{request.user.channeluser.channelslug}}</h6>
                             <label>{{request.user.channeluser.subscribers.count}} {% if request.get_full_path == 'channel/{{request.user.channeluser.id}}' %}true{% endif %} subscribers</label>
                         </div>
                     </div>

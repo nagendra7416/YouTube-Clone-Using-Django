@@ -1,20 +1,40 @@
 {% extends 'authorchannel/author_channel.html' %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block authorchannel %}
+
+<style>
+    .channel-inner .posts .post-inner .post .post-img
+    {
+        position: relative;
+    }
+    .channel-inner .posts .post-inner .post .post-img label
+    {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        font-size: 11px;
+        padding: 3px 5px;
+    }
+</style>
+
+
 <div class="buttons">
     <button class="active">
-        <a href="{% url 'author_channel' channel.channelname %}">
+        <a href="{% url 'author_channel' channel.channelslug %}">
             HOME 
         </a>
     </button>
     <button>
-        <a href="{% url 'author_channel_videos' channel.channelname %}">
+        <a href="{% url 'author_channel_videos' channel.channelslug %}">
             Videos
         </a>
     </button>
     <button>
-        <a href="{% url 'author_channel_playlists' channel.channelname %}">
+        <a href="{% url 'author_channel_playlists' channel.channelslug %}">
             playlists
         </a>
     </button>
@@ -24,12 +44,12 @@
         </a>
     </button>
     <button>
-        <a href="{% url 'author_channel_channels' channel.channelname %}">
+        <a href="{% url 'author_channel_channels' channel.channelslug %}">
             channels
         </a>
     </button>
     <button>
-        <a href="{% url 'author_channel_about' channel.channelname %}">
+        <a href="{% url 'author_channel_about' channel.channelslug %}">
             about
         </a>
     </button>
@@ -45,7 +65,7 @@
                     <div class="feature-detail">
                         <h4>{{featured.title}}</h4>
                         <a href="{% url 'channel' featured.id %}">{{featured.author.channeluser.channelname}}</a>
-                        <span><span id="views">{{featured.watched }}</span> &bull; <span id="timeago">{{featured.published | date:"Y-m-d H:i:s"}}</span></span>  
+                        <span><span id="views">{{featured.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{featured.published | date:"Y-m-d H:i:s"}}</span></span>  
                     </div>
                 </div>
             </a>
@@ -60,11 +80,12 @@
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
                                 <img src="{{uservideo.image.url}}">
+                                <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.watched }}</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
                             </div>
                         </a>
                     </div>    
@@ -80,11 +101,12 @@
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
                                 <img src="{{uservideo.image.url}}">
+                                <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.watched }}</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
                             </div>
                         </a>
                     </div>    

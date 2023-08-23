@@ -1,10 +1,49 @@
 {% extends 'index.html' %}
 {% load static %}
 {% load humanize %}
-
+{% load custom_filters %}
 {% block content %}
 {% block title %}<title>Subscriptions - YouTube</title>{% endblock %}
 <style>
+
+
+    body.dark .subcon h2 
+    {
+        color: white;
+    }
+    body.dark .subpost h4
+    {
+        color: #f1f1f1;
+    }
+    body.dark .subpost a
+    {
+        color: #aaa;
+    }
+    body.dark .subpost span
+    {
+        color: #aaa;
+    }
+    body.dark .subcon span label
+    {
+        color: #aaa;
+    }
+
+    .subcon span label
+    {
+        font-size: 12px; 
+        color: #606060;
+    }
+
+
+
+
+
+
+
+
+
+
+
     .subpost .subimg
     {
         position: relative;
@@ -89,52 +128,60 @@
     }
 </style>
 {% include 'sidebar.html' %}
+{% include 'hiddensidebar.html' %}
 
 <div class="main-scroll">
+    
     <div class="inner">
+        
         <div class="subcon">
+            <h2 style="margin-bottom: 15px; line-height: 30px; font-size: 24px; font-weight: 400; width: 100%; max-width: 1084px;">Subscriptions</h2>
             <div class="subinner">
-                {% if vids.count > 0 and vids.count < 5 %}
-                    {% for video in vids %}
-                        <div class="subpost">
-                            <a href="{% url 'watch' video.id %}">
-                                <div class="subimg">
-                                    <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
-                                </div>
-                                <div class="subdetail">
-                                    <h4>{{video.title}}</h4>
-                                    <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
-                                    <span><label id="views" style="font-size: 12px; color: #606060;">{{video.watched}}</label> views &bull; <label id="timeago" style="font-size: 12px; color: #606060;">{{video.published | date:"Y-m-d H:i:s"}}</label></span>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
+                
+                {% if vids %}
+                    {% if vids.count > 0 and vids.count < 5 %}
+                        {% for video in vids %}
+                            <div class="subpost">
+                                <a href="{% url 'watch' video.id %}">
+                                    <div class="subimg">
+                                        <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
+                                    </div>
+                                    <div class="subdetail">
+                                        <h4>{{video.title}}</h4>
+                                        <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
+                                        <span><label>{{video.views|format_views_as_K}}</label> views &bull; <label>{{video.published|time_ago}}</label></span>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
 
-                    <div class="subpost"></div>
-                    <div class="subpost"></div>
-                    <div class="subpost"></div>
-                    <div class="subpost"></div>
-                    <div class="subpost"></div>
-                    <div class="subpost"></div>
+                        <div class="subpost"></div>
+                        <div class="subpost"></div>
+                        <div class="subpost"></div>
+                        <div class="subpost"></div>
+                        <div class="subpost"></div>
+                        <div class="subpost"></div>
+                    {% else %}
+                        {% for video in vids %}
+                            <div class="subpost">
+                                <a href="{% url 'watch' video.id %}">
+                                    <div class="subimg">
+                                        <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
+                                        <span id="videourl">
+                                            <p>{{video.duration}}</p>
+                                        </span>
+                                    </div>
+                                    <div class="subdetail">
+                                        <h4>{{video.title}}</h4>
+                                        <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
+                                        <span><label>{{video.views|format_views_as_K}}</label> views &bull; <label>{{video.published|time_ago}}</label></span>
+                                    </div>
+                                </a>
+                            </div>   
+                        {% endfor %}
+                    {% endif %}
                 {% else %}
-                    {% for video in vids %}
-                        <div class="subpost">
-                            <a href="{% url 'watch' video.id %}">
-                                <div class="subimg">
-                                    <img src="{{video.image.url}}">
-                                    <span id="videourl" video-id="{{video.video.url}}">
-                                        <p></p>
-                                        <video src="{{video.video.url}}"></video>
-                                    </span>
-                                </div>
-                                <div class="subdetail">
-                                    <h4>{{video.title}}</h4>
-                                    <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
-                                    <span><label id="views" style="font-size: 12px; color: #606060;">{{video.watched}}</label> views &bull; <label id="timeago" style="font-size: 12px; color: #606060;">{{video.published | date:"Y-m-d H:i:s"}}</label></span>
-                                </div>
-                            </a>
-                        </div>   
-                    {% endfor %}
+                    <p>No Subscriptions found</p>
                 {% endif %}
             </div>
         </div>

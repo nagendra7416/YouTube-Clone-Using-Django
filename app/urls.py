@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, likes_count, get_comments, get_videos, ReactView
+from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, get_videos, ReactView, load_articles, nointernet
 
 urlpatterns = [
     path('', home, name=''),
+    path('feed/shorts/<int:id>', shorts, name='shorts'),
     path('get_videos', get_videos, name='get_videos'),
     path('api', ReactView.as_view(), name='api'),
     path('userapi', UserView.as_view(), name='userapi'),
@@ -10,7 +11,6 @@ urlpatterns = [
     path('login', login, name='login'),
     path('watch/<str:id>', watch, name='watch'),
 
-    path('watch/<str:id>/likes_count', likes_count, name='likes_count'),
     path('watch/<str:id>/comments', get_comments, name='get_comments'),
 
     path('watch/<str:id>/<str:comment_id>/like', like_comment, name='like_comment'),
@@ -42,14 +42,18 @@ urlpatterns = [
 
 
 
-    path('c/<str:channelname>', author_channel, name='author_channel'),
-    path('c/<str:channelname>/videos', author_channel_videos, name='author_channel_videos'),
-    path('c/<str:channelname>/about', author_channel_about, name='author_channel_about'),
-    path('c/<str:channelname>/playlists', author_channel_playlists, name='author_channel_playlists'),
-    path('c/<str:channelname>/channels', author_channel_channels, name='author_channel_channels'),
+    path('c/<str:channelslug>', author_channel, name='author_channel'),
+    path('c/<str:channelslug>/videos', author_channel_videos, name='author_channel_videos'),
+    path('c/<str:channelslug>/about', author_channel_about, name='author_channel_about'),
+    path('c/<str:channelslug>/playlists', author_channel_playlists, name='author_channel_playlists'),
+    path('c/<str:channelslug>/channels', author_channel_channels, name='author_channel_channels'),
 
 
-    path('c/<str:channelname>/subscribe', subscribe, name='subscribe'),
-    path('c/<str:channelname>/unsubscribe', unsubscribe, name='unsubscribe'),
+    path('c/<str:channelslug>/subscribe', subscribe, name='subscribe'),
+    path('c/<str:channelslug>/unsubscribe', unsubscribe, name='unsubscribe'),
+
+
+    path('load_articles/', load_articles, name='load_articles'),
+    path('offline/', nointernet, name='nointernet'),
 
 ]

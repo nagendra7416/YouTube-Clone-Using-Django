@@ -1,6 +1,7 @@
 {% extends 'channel/channel.html' %}
 {% load static %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block channel %}
 <style>
@@ -103,7 +104,7 @@
                         </div>
                         <div class="post-detail">
                             <h3>{{play.playlist_name}}</h3>
-                            <span id="timeago">{{play.playlist_created | date:"Y-m-d H:i:s"}}</span>
+                            <span>{{play.playlist_created|time_ago}}</span>
                             <label>{{play.playlist_visibility}}</label>
                             <a href="#">View full playlist</a>
                         </div>

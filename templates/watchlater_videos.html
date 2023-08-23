@@ -1,10 +1,54 @@
 {% extends 'index.html' %}
 {% load static %}
 {% load humanize %}
+{% load custom_filters %}
 {% block content %}
-{% block title %}<title>Watch later - YouTube</title>{% endblock %}
+{% block title %}<title>({{totalvideos}}) Watch later - YouTube</title>{% endblock %}
 
 <style>
+
+    body.dark .watchlater .left label 
+    {
+        color: lightgray;
+    }
+    body.dark .watchlater .left .videosstats
+    {
+        color: #aaa;
+    }
+    .watchlater .left .videosstats label
+    {
+        font-size: 14px; 
+        line-height: normal; 
+        margin-bottom: 0; 
+        margin: 0 5px; 
+        color: #606060;
+    }
+    body.dark .watchlater .left .videosstats label
+    {
+        color: #aaa;
+    }
+    body.dark .watchlater .left .author
+    {
+        border-top: .5px solid #1f1f1f;
+    }
+    body.dark .counter 
+    {
+        color: white;
+    }
+    body.dark .authorright
+    {
+        color: white;
+    }
+    body.dark .vs .v .vdetail h4
+    {
+        color: #f1f1f1;
+    }
+    body.dark .vs .v .vdetail 
+    {
+        color: #aaa;
+    }
+    
+
 
     .watchlater 
     {
@@ -142,6 +186,17 @@
         height: 67px;
         overflow: hidden;
         border-radius: 8px;
+        position: relative;
+    }
+    .vs .v .vimg label
+    {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        font-size: 11px;
+        padding: 3px 5px;
     }
     .vs .v .vimg img 
     {
@@ -173,6 +228,8 @@
 </style>
 
 {% include 'sidebar.html' %}
+{% include 'hiddensidebar.html' %}
+
 
 <div class="main-scroll" style="overflow-y: hidden;">
     <div class="inner">
@@ -182,28 +239,26 @@
                     {% for vs in likedfirst %}
                         <a href="{% url 'watch' vs.id %}">
                                 <div class="topimg">
-                                    <img src="{{vs.image.url}}">
+                                    <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{vs.image.url}}">
                                 </div>
                             </a>
                     {% endfor %}
                 {% else %}
-                    {% comment %} <form> {% endcomment %}
                         <button name="" value="" style="border: none; background: none; outline: none;">
                             <div class="topimg">
-                                <img src="{% static 'images/placeholder.jpg' %}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{% static 'images/placeholder.jpg' %}">
                             </div>
                         </button>
-                    {% comment %} </form> {% endcomment %}
                 {% endif %}
                 
                 <label>Watch Later videos</label>
                 <div class="videosstats">
-                    <span style="display: flex; align-items: center;">{{totalvideos}} videos &bull; <label id="views" style="font-size: 14px; line-height: normal; margin-bottom: 0; margin: 0 5px; color: #606060;">{{viewcount}}</label> &bull; Updated today</span>
+                    <span style="display: flex; align-items: center;">{{totalvideos}} videos &bull; <label style="">{{viewcount|format_views_as_K}} views</label> &bull; Updated today</span>
                 </div>
                 <p>Private</p>
                 <div class="author">
                     <div class="authorleft">
-                        <img src="{{request.user.channeluser.channelimg.url}}">
+                        <img src="{% static 'images/author.png' %}" data-real-src="{{request.user.channeluser.channelimg.url}}">
                     </div>
                     <div class="authorright">
                         {{request.user.channeluser.channelname}}
@@ -219,7 +274,8 @@
                                     {{forloop.counter}}
                                 </div>
                                 <div class="vimg">
-                                    <img src="{{video.image.url}}">
+                                    <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
+                                    <label>{{video.duration}}</label>
                                 </div>
                                 <div class="vdetail">
                                     <h4>{{video.title}}</h4>

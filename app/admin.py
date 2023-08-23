@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Channel, Notification, Video, something, Playlist
+from .models import Channel, Notification, Video, something, Playlist, HistoryVideo, Shorts
 
 admin.site.register(Notification)
 class VideoAdmin(admin.ModelAdmin):
     model = Video
-    list_display = ['id', 'title', 'author', 'visibility', 'watched']
+    list_display = ['id', 'title', 'author', 'visibility', 'views']
 
 admin.site.register(Video, VideoAdmin)
 
@@ -30,3 +30,10 @@ class PlaylistAdmin(admin.ModelAdmin):
     list_display = ['playlist_name', 'playlist_user']
     list_filter = ['playlist_user']
 admin.site.register(Playlist, PlaylistAdmin)
+
+
+
+
+
+admin.site.register(HistoryVideo)
+admin.site.register(Shorts)
