@@ -1,6 +1,7 @@
 {% extends 'authorchannel/author_channel.html' %}
 {% load humanize %}
 {% load custom_filters %}
+{% load static %}
 
 {% block authorchannel %}
 
@@ -65,7 +66,7 @@
                     <div class="feature-detail">
                         <h4>{{featured.title}}</h4>
                         <a href="{% url 'channel' featured.id %}">{{featured.author.channeluser.channelname}}</a>
-                        <span><span id="views">{{featured.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{featured.published | date:"Y-m-d H:i:s"}}</span></span>  
+                        <span><span id="views">{{featured.views|format_views_as_K}} views</span> &bull; <span>{{featured.published|time_ago}}</span></span>  
                     </div>
                 </div>
             </a>
@@ -79,13 +80,13 @@
                     <div class="post">
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
-                                <img src="{{uservideo.image.url}}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{uservideo.image.url}}">
                                 <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>    
@@ -100,13 +101,13 @@
                     <div class="post">
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
-                                <img src="{{uservideo.image.url}}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{uservideo.image.url}}">
                                 <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s" }}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>    

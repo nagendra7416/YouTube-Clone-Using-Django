@@ -81,11 +81,11 @@
     .subcon .subinner 
     {
         width: 100%;
-        max-width: 1084px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        grid-gap: 5px;
+        grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+        grid-gap: 10px;
         grid-row-gap: 15px;
+        grid-column-gap: 20px;
     }
     .subcon .subinner .subpost .subimg img
     {
@@ -123,8 +123,32 @@
     {
         text-align: left;
         display: flex;
-        flex-direction: column;
         align-items: flex-start;
+        margin: 10px 0;
+    }
+    
+    .subpost .subdetail 
+    {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: row;
+    }
+    .subpost .subdetail .subdetailleft .authorimg 
+    {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+    .subpost .subdetail .subdetailleft .authorimg img 
+    {
+        width: 100%;
+        height: 100%;
+    }
+    .subcon .subinner .subpost .subdetail .subdetailright
+    {
+        
     }
 </style>
 {% include 'sidebar.html' %}
@@ -135,7 +159,7 @@
     <div class="inner">
         
         <div class="subcon">
-            <h2 style="margin-bottom: 15px; line-height: 30px; font-size: 24px; font-weight: 400; width: 100%; max-width: 1084px;">Subscriptions</h2>
+            <h2 style="margin-bottom: 15px; line-height: 30px; font-size: 24px; font-weight: 400; width: 100%;">Subscriptions</h2>
             <div class="subinner">
                 
                 {% if vids %}
@@ -147,9 +171,19 @@
                                         <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{video.image.url}}">
                                     </div>
                                     <div class="subdetail">
-                                        <h4>{{video.title}}</h4>
-                                        <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
-                                        <span><label>{{video.views|format_views_as_K}}</label> views &bull; <label>{{video.published|time_ago}}</label></span>
+                                        <div class="subdetailleft">
+                                            <div class="authorimg">
+                                                <img src="{% static 'images/author.png' %}" data-real-src="{{video.author.channeluser.channelimg.url}}">
+                                            </div>
+                                        </div>
+                                        <div class"subdetailright" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                            <h4>{{video.title}}</h4>
+                                            <a href="{% url 'author_channel' video.author.channeluser.channelslug %}">{{video.author.channeluser.channelname}}</a>
+                                            <span>
+                                                <label>{{video.views|format_views_as_K}}</label> views &bull; 
+                                                <label>{{video.published|time_ago}}</label>
+                                            </span>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
@@ -172,9 +206,19 @@
                                         </span>
                                     </div>
                                     <div class="subdetail">
-                                        <h4>{{video.title}}</h4>
-                                        <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
-                                        <span><label>{{video.views|format_views_as_K}}</label> views &bull; <label>{{video.published|time_ago}}</label></span>
+                                        <div class="subdetailleft">
+                                            <div class="authorimg">
+                                                <img src="{% static 'images/author.png' %}" data-real-src="{{video.author.channeluser.channelimg.url}}">
+                                            </div>
+                                        </div>
+                                        <div class"subdetailright" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                            <h4>{{video.title}}</h4>
+                                            <a href="{% url 'author_channel' video.author.channeluser.channelslug %}">{{video.author.channeluser.channelname}}</a>
+                                            <span>
+                                                <label>{{video.views|format_views_as_K}}</label> views &bull; 
+                                                <label>{{video.published|time_ago}}</label>
+                                            </span>
+                                        </div>
                                     </div>
                                 </a>
                             </div>   

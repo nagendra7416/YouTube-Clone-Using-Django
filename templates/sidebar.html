@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="side">
     <div class="buttons">
         <ul>
@@ -348,7 +350,7 @@
                             <button>
                                 <a href="{% url 'author_channel' subscriber.channelslug %}">
                                     <div class="linkimmg" style="min-width: 24px; width: 24px; height: 24px; border-radius: 50%; overflow: hidden; margin-right: 20px;">
-                                        <img src="{{subscriber.channelimg.url}}" width="100%" height="100%">
+                                        <img src="{% static 'images/author.png' %}" data-real-src="{{subscriber.channelimg.url}}" width="100%" height="100%">
                                     </div>
                                     <span>{{subscriber.channelname}}</span>
                                 </a>

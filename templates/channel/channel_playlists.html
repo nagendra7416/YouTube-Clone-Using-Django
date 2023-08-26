@@ -95,7 +95,7 @@
                     <div class="post">
                         <div class="post-img">
                             <a href="#" style="height: 100%; display: flex; align-items: center;">
-                                <img src="{{play.playlist_videos.first.image.url}}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{play.playlist_videos.first.image.url}}">
                                 <div class="playcount">
                                     <label>{{play.playlist_videos.all.count}}</label>
                                     <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none;"><g class="style-scope yt-icon"><path d="M22,7H2v1h20V7z M13,12H2v-1h11V12z M13,16H2v-1h11V16z M15,19v-8l7,4L15,19z" class="style-scope yt-icon"></path></g></svg>

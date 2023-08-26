@@ -172,6 +172,19 @@ class something(models.Model):
         if self.parent is None:
             return True
         return False
+    
+    def save(self, *args, **kwargs):
+        creating = self.pk is None  # Check if comment is being created (not updated)
+        super().save(*args, **kwargs)
+        if creating:
+            if self.comment_user != self.comment_video.author:
+                Notification.objects.create(
+                    notification_type=3,
+                    to_user=self.comment_video.author,  # Assuming you have an author field in Video
+                    from_user=self.comment_user,
+                    post=self.comment_video,
+                    comment=self,
+                )
 
 
 class Notification(models.Model):
@@ -182,8 +195,7 @@ class Notification(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True, related_name='from_user')
     post = models.ForeignKey(
         Video, on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(something, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     is_seen = models.BooleanField(default=False)
 

@@ -108,8 +108,8 @@
                         <div class="post">
                             <div class="channelinner">
                                 <div class="channelimg">
-                                    <a href="{% url 'author_channel' channel.channelname %}">
-                                        <img src="{{channel.channelimg.url}}" />
+                                    <a href="{% url 'author_channel' channel.channelslug %}">
+                                        <img src="{% static 'images/author.png' %}" data-real-src="{{channel.channelimg.url}}" />
                                     </a>
                                 </div>
                                 <div class="channeldetail">
@@ -133,7 +133,7 @@
                         <div class="post">
                             <div class="channelinner">
                                 <div class="channelimg">
-                                    <a href="{% url 'author_channel' channel.channelname %}">
+                                    <a href="{% url 'author_channel' channel.channelslug %}">
                                         <img src="{{channel.channelimg.url}}" />
                                     </a>
                                 </div>

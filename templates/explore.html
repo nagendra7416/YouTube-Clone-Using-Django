@@ -174,10 +174,10 @@
                                         {% if request.user == video.author %}
                                             <a href="{% url 'channel' request.user.channeluser.id %}">{{video.author.channeluser.channelname}}</a>
                                         {% else %}
-                                            <a href="{% url 'author_channel' video.author.channeluser.channelname %}">{{video.author.channeluser.channelname}}</a>
+                                            <a href="{% url 'author_channel' video.author.channeluser.channelslug %}">{{video.author.channeluser.channelname}}</a>
                                         {% endif %}
                                         
-                                        <span> &bull; <label id="views" style="margin: 0 5px;">{{video.views|format_views_as_K}} views</label> &bull; <label style="margin: 0 5px;">{{video.published|time_ago}}</label></span>
+                                        <span> &bull; <label style="margin: 0 5px;">{{video.views|format_views_as_K}} views</label> &bull; <label style="margin: 0 5px;">{{video.published|time_ago}}</label></span>
                                     </div>
                                     {% if video.description %}
                                         <p>{{video.description|safe}}</p>

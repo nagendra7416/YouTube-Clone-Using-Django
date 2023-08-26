@@ -182,7 +182,7 @@
                 <div class="channel-header">
                     <div class="left">
                         <div class="channel-img">
-                            <img src="{{channel.channelimg.url}}">
+                            <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{channel.channelimg.url}}">
                         </div>
                         <div class="channel-name">
                             <h4>{{channel.channelname}}</h4>

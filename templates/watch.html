@@ -681,12 +681,12 @@
     {
         display: flex;
         align-items: center;
-        margin-left: 10px;
+        margin-left: 15px;
     }
     .likescon .authorlike .img 
     {
-        width: 14px;
-        height: 14px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
         position: relative;
     }
@@ -1008,6 +1008,16 @@
         display: flex;
         align-items: center;
     }
+    .liketop .like 
+    {
+        display: flex;
+        align-items: center;
+    }
+    .liketop .reply
+    {
+        display: flex;
+        align-items: center;
+    }
     .likebottom
     {
         width: 100%;
@@ -1233,9 +1243,9 @@
                         <div class="subleft">
                             <div class="subimg">
                                 {% if request.user == video.author %}
-                                    <a href="{% url 'channel' request.user.channeluser.id %}"><img src="{{video.author.channeluser.channelimg.url}}"></a>
+                                    <a href="{% url 'channel' request.user.channeluser.id %}"><img src="{% static 'images/author.png' %}" data-real-src="{{video.author.channeluser.channelimg.url}}"></a>
                                 {% else %}
-                                    <a href="{% url 'author_channel' video.author.channeluser.channelname %}"><img src="{{video.author.channeluser.channelimg.url}}"></a>
+                                    <a href="{% url 'author_channel' video.author.channeluser.channelname %}"><img src="{% static 'images/author.png' %}" data-real-src="{{video.author.channeluser.channelimg.url}}"></a>
                                 {% endif %}
                             </div>
                             <div class="subdetail">
@@ -1278,12 +1288,13 @@
                 </div>
                 <div class="usercomment">
                     <div class="userimg">
-                        <img src="{{request.user.channeluser.channelimg.url}}">
+                        <img src="{% static 'images/author.png' %}" data-real-src="{{request.user.channeluser.channelimg.url}}">
                         {{commentform.comment_id}}
                     </div>
                     <div class="userinput">
                         <form action="{% url 'watch' video.id %}" method="POST" id="commentform">
                             {% csrf_token %}
+                            
                             {% comment %} {{commentform.id}} {% endcomment %}
                             {% comment %} {{commentform.comment_id}} {% endcomment %}
                             {{commentform.comment_video}}
@@ -1307,7 +1318,7 @@
                             {% if comment.is_parent %}
                                 <div class="publiccomment">
                                     <div class="publicimg">
-                                        <img src="{{comment.comment_user.channeluser.channelimg.url}}">
+                                        <img src="{% static 'images/author.png' %}" data-real-src="{{comment.comment_user.channeluser.channelimg.url}}">
                                     </div>
                                     <div class="publicdetail">
                                         <div class="head">
@@ -1340,7 +1351,7 @@
                                                 {% if comment.comment_liked %}
                                                     <div class="authorlike">
                                                         <div class="img">
-                                                            <img src="{{video.author.channeluser.channelimg.url}}" width="20px">
+                                                            <img src="{% static 'images/author.png' %}" data-real-src="{{video.author.channeluser.channelimg.url}}" width="20px">
                                                             <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none;"><g class="style-scope yt-icon"><path d="M16.5,2c-1.74,0-3.41,0.88-4.5,2.28C10.91,2.88,9.24,2,7.5,2C4.42,2,2,4.64,2,7.99c0,4.12,3.4,7.48,8.55,12.58L12,22 l1.45-1.44C18.6,15.47,22,12.11,22,7.99C22,4.64,19.58,2,16.5,2z" class="style-scope yt-icon"></path></g></svg>
                                                         </div>
                                                     </div>
@@ -1379,7 +1390,7 @@
                                     <div class="publiccomment" style="width: 100%; display: flex; align-items: flex-start; justify-content: flex-end;">
                                         <div class="publicimage"></div>
                                         <div class="publicimg" style="width: 24px; height: 24px; min-width: 24px;">
-                                            <img src="{{child.comment_user.channeluser.channelimg.url}}">
+                                            <img src="{% static 'images/author.png' %}" data-real-src="{{child.comment_user.channeluser.channelimg.url}}">
                                         </div>
                                         <div class="publicdetail" style="">
                                             <div class="head">
@@ -1584,6 +1595,8 @@
             var comment_body = document.getElementById('id_comment_body');
             var comment_id = document.getElementById('id_comment_id');
             var csrf = document.getElementsByName("csrfmiddlewaretoken");
+
+            var currentuser = "{{request.user}}";
             
             var channelimg = "{{request.user.channeluser.channelimg.url}}";
             var channelname = "{{request.user.channeluser.channelname}}";
@@ -1650,7 +1663,7 @@
                                     <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; width: 24px; height: 24px;"><g class="style-scope yt-icon"><path d="M12,16.5c0.83,0,1.5,0.67,1.5,1.5s-0.67,1.5-1.5,1.5s-1.5-0.67-1.5-1.5S11.17,16.5,12,16.5z M10.5,12 c0,0.83,0.67,1.5,1.5,1.5s1.5-0.67,1.5-1.5s-0.67-1.5-1.5-1.5S10.5,11.17,10.5,12z M10.5,6c0,0.83,0.67,1.5,1.5,1.5 s1.5-0.67,1.5-1.5S12.83,4.5,12,4.5S10.5,5.17,10.5,6z" class="style-scope yt-icon"></path></g></svg>
                                 </a>
                                 <div class="commentoptions">
-                                    {% if comment.comment_user != request.user %}
+                                    {% if comment_user != currentuser %}
                                         <a href="#">Report</a>
                                     {% else %}
                                         <a id="deletecommentbtn" onclick="deletecommentfun(this)">Delete</a>

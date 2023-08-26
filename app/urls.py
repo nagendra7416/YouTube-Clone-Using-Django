@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, get_videos, ReactView, load_articles, nointernet
-
+from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, ReactView, load_articles, nointernet, video_title_suggestions
 urlpatterns = [
     path('', home, name=''),
     path('feed/shorts/<int:id>', shorts, name='shorts'),
-    path('get_videos', get_videos, name='get_videos'),
+    path('video-title-suggestions/', video_title_suggestions, name='video_title_suggestions'),
+    # path('get_videos', get_videos, name='get_videos'),
     path('api', ReactView.as_view(), name='api'),
     path('userapi', UserView.as_view(), name='userapi'),
     path('api/<str:id>', VideoView.as_view(), name='videoview'),
@@ -42,11 +42,11 @@ urlpatterns = [
 
 
 
-    path('c/<str:channelslug>', author_channel, name='author_channel'),
-    path('c/<str:channelslug>/videos', author_channel_videos, name='author_channel_videos'),
-    path('c/<str:channelslug>/about', author_channel_about, name='author_channel_about'),
-    path('c/<str:channelslug>/playlists', author_channel_playlists, name='author_channel_playlists'),
-    path('c/<str:channelslug>/channels', author_channel_channels, name='author_channel_channels'),
+    path('@<str:channelslug>', author_channel, name='author_channel'),
+    path('@<str:channelslug>/videos', author_channel_videos, name='author_channel_videos'),
+    path('@<str:channelslug>/about', author_channel_about, name='author_channel_about'),
+    path('@<str:channelslug>/playlists', author_channel_playlists, name='author_channel_playlists'),
+    path('@<str:channelslug>/channels', author_channel_channels, name='author_channel_channels'),
 
 
     path('c/<str:channelslug>/subscribe', subscribe, name='subscribe'),

@@ -65,13 +65,13 @@
                     <div class="post">
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
-                                <img src="{{uservideo.image.url}}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{uservideo.image.url}}">
                                 <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s"}}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>    
@@ -86,13 +86,13 @@
                     <div class="post">
                         <a href="{% url 'watch' uservideo.id %}">
                             <div class="post-img">
-                                <img src="{{uservideo.image.url}}">
+                                <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{uservideo.image.url}}">
                                 <label>{{uservideo.duration}}</label>
                             </div>
                             <div class="post-detail">
                                 <h3>{{uservideo.title}}</h3>
                                 <a href="{% url 'author_channel' uservideo.author.channeluser.channelname %}">{{uservideo.author.channeluser.channelname}}</a>
-                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span id="timeago">{{uservideo.published | date:"Y-m-d H:i:s"}}</span></span>
+                                <span><span id="views">{{uservideo.views|format_views_as_K}} views</span> &bull; <span>{{uservideo.published|time_ago}}</span></span>
                             </div>
                         </a>
                     </div>    

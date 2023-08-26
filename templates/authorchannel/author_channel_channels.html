@@ -150,7 +150,7 @@
                             <div class="channelinner">
                                 <div class="channelimg">
                                     <a href="{% url 'author_channel' channel.channelslug %}">
-                                        <img src="{{channel.channelimg.url}}" />
+                                        <img src="{% static 'images/author.png' %}" data-real-src="{{channel.channelimg.url}}" />
                                     </a>
                                 </div>
                                 <div class="channeldetail">

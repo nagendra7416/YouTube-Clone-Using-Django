@@ -23,10 +23,89 @@ import json
 from django.core import serializers
 from django.core import serializers
 from django.utils import timezone
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
+from django.template import engines
+from django.utils.timezone import now
+
+def format_views_as_K(value):
+    if value >= 10 ** 9:  # 1 Billion and above
+        return f'{value / 10 ** 9:.1f}B'
+    elif value >= 10 ** 6:  # 1 Million and above
+        return f'{value / 10 ** 6:.1f}M'
+    elif value >= 10 ** 3:  # 1 Thousand and above
+        return f'{value / 10 ** 3:.1f}K'
+    else:
+        return str(value)
+def time_ago(value):
+    if not value:
+        return ""
+
+    now_utc = now()
+    time_difference = now_utc - value
+
+    if time_difference.days > 365:
+        return f'{time_difference.days // 365} years ago'
+    elif time_difference.days > 30:
+        return f'{time_difference.days // 30} months ago'
+    elif time_difference.days > 7:
+        return f'{time_difference.days // 7} weeks ago'
+    elif time_difference.days > 1:
+        return f'{time_difference.days} days ago'
+    elif time_difference.seconds > 3600:
+        return f'{time_difference.seconds // 3600} hours ago'
+    elif time_difference.seconds > 60:
+        return f'{time_difference.seconds // 60} minutes ago'
+    else:
+        return f'{time_difference.seconds} seconds ago'
+# def get_videos(request):
+#     engine = engines['django']
+#     page = request.GET.get('page')
+#     if page is None or not page.isdigit() or int(page) < 1:
+#         page = 1
+#     videos = Video.objects.all().order_by('-views')
+#     paginator = Paginator(videos, 6)
+
+#     try:
+#         videos_page = paginator.page(page)
+#     except EmptyPage:
+#         return JsonResponse({'error': 'No more posts available'})
+    
+#     serialized_videos = [
+#         {
+#             'id': video.id,
+#             'visibility': video.visibility,
+#             'title': video.title, 
+#             'author': video.author.channeluser.channelname,
+#             'author_image': video.author.channeluser.channelimg.url,
+#             'authorchannelurl': 'c/'+video.author.channeluser.channelslug,
+#             'image': video.image.url,
+#             'video': video.video.url,
+#             'duration': video.duration,
+#             'description': video.description,
+#             'published': time_ago(video.published),
+#             'views': format_views_as_K(video.views),
+#             'liked': video.liked.count(),
+#             'watchlater': video.watchlater.count(),
+#             'currentuser': request.user.channeluser.channelname,
+#             'currentuserchannelurl': 'channel/'+request.user.channeluser.id,
+#             }
+#         for video in videos_page
+#     ]
+
+#     return JsonResponse({'videos': serialized_videos})
 
 
 
+
+def video_title_suggestions(request):
+    user_input = request.GET.get('input', '').strip()
+    suggestions = []
+
+    if user_input:
+        videos = Video.objects.filter(title__icontains=user_input)[:10]
+        suggestions = [{'id': video.id, 'title': video.title} for video in videos]
+
+    return JsonResponse({'suggestions': suggestions})
 
 
 
@@ -36,9 +115,6 @@ def load_articles(request):
     data = [{'id': article.id, 'visibility': article.visibility, 'title': article.title, 'author': article.author.username, 'image': article.image.url, 'video': article.video.url, 'duration': article.duration, 'description': article.description, 'published': article.published, 'views': article.views} for article in articles]
     
     return JsonResponse({'videos': data})
-
-
-
 
 def format_video_views(views):
     return "{:,}".format(views)
@@ -56,13 +132,11 @@ class ReactView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-
 class UserView(APIView):
     def get(self, request):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
-
 
 class VideoView(APIView):
     def get_object(self, id):
@@ -76,17 +150,12 @@ class VideoView(APIView):
         serializer = VideoSerializer(video)
         return Response(serializer.data)
 
-from django.core.paginator import Paginator
+
 
 def home(request):
     videos = Video.objects.filter(visibility='Public').all().order_by('?')
     subscribers = ''
     notifications = ''
-
-    paginator = Paginator(Video.objects.all().order_by("?"), 6)
-
-    page_number = request.GET.get('page')
-    current_page = paginator.get_page(page_number)
 
     articles = Video.objects.all()
     serialized_events = serializers.serialize('json', articles)
@@ -110,7 +179,6 @@ def home(request):
         'form': form,
         'notifications': notifications,
         'comments': comments,
-        'current_page': current_page,
     }
     return render(request, 'home.html', context)
 
@@ -125,9 +193,6 @@ def shorts(request, id):
 
 
 
-def get_videos(request):
-    videos = Video.objects.all().order_by("?")
-    return JsonResponse(data=list(videos.values()), safe=False)
 
 
 def explore(request):
@@ -147,21 +212,25 @@ def explore(request):
 
 
 def subscriptions(request):
-    ids = []
-    sub = ''
     subscribers = ''
     notifications = ''
-    if request.user.is_authenticated:
-        sub = Channel.objects.filter(subscribers=request.user).all()
-        subscribers = Channel.objects.filter(subscribers=request.user).all()
-        notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
-    for i in sub:
-        ids.append(i.channeluser)
+    # if request.user.is_authenticated:
+    #     sub = Channel.objects.filter(subscribers=request.user).all()
+    #     subscribers = Channel.objects.filter(subscribers=request.user).all()
+    #     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
+    # for i in sub:
+    #     ids.append(i.channeluser)
 
-    preserved = Case(*[When(id=id, then=pos) for pos, id in enumerate(ids)])
-    vids = Video.objects.filter(author__in=ids).order_by(preserved)
+    # preserved = Case(*[When(id=id, then=pos) for pos, id in enumerate(ids)])
+    # vids = Video.objects.filter(author__in=ids).order_by(preserved)
+
+    if request.user.is_authenticated:
+        sub_channels = Channel.objects.filter(subscribers=request.user)
+        sub_videos = Video.objects.filter(author__channeluser__in=sub_channels).all()
+
+
     context = {
-        'vids': vids,
+        'vids': sub_videos,
         'subscribers': subscribers,
         'notifications': notifications,
     }
@@ -178,7 +247,6 @@ def library(request):
     if request.user.is_authenticated:
         playlists = Playlist.objects.filter(playlist_user=request.user).all()
         profile = get_object_or_404(Channel, channeluser=request.user)
-        # users = profile.history.all()
         users = HistoryVideo.objects.filter(his_user=request.user).all().order_by('-his_time')
         liked_videos = Video.objects.filter(liked=request.user).all()
         subscribers = Channel.objects.filter(subscribers=request.user).all()
@@ -241,9 +309,9 @@ def watch(request, id):
     if notif_id:
         notif_id = request.POST.get('v')   
         notifs = Notification.objects.filter(post=video, id=notif_id).first()
-        print(notifs)
-        notifs.is_seen = True
-        notifs.save()
+        if notifs:
+            notifs.is_seen = True
+            notifs.save()
 
     commentform = ''
     jsoncom = []
@@ -268,9 +336,9 @@ def watch(request, id):
             commentform = CommentForm(request.POST or None)
             if commentform.is_valid():
                 commentform.save()
-                if request.user != video.author:
-                    notify = Notification.objects.create(notification_type=3, from_user=request.user, to_user=video.author, post=video)
-                    notify.save()
+                # if request.user != video.author:
+                #     notify = Notification.objects.create(notification_type=3, from_user=request.user, to_user=video.author, post=video)
+                #     notify.save()
                 return redirect('watch', video.id)
 
     context = {

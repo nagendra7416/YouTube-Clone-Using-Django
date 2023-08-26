@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'simple_history',
     'livereload',
+    'infinite_scroll_pagination',
 ]
 
 MIDDLEWARE = [
