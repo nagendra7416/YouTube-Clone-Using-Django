@@ -26,9 +26,9 @@
             <video src="{{shorts.short_video.url}}" autoplay loop unmuted controls style="width: 50%;"></video>{{shorts.id}}
 
             {% if id > 1 %}
-            <a href="{% url 'shorts' id=id %}">Next</a>
+            <a href="{% url 'shorts' %}">Next</a>
             {% else %}
-            <a href="{% url 'shorts' id=id %}">Prev</a>
+            <a href="{% url 'shorts' %}">Prev</a>
             {% endif %}
         
     </div>

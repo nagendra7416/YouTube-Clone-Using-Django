@@ -292,10 +292,11 @@
                         <div class="channel-img">
                             <img src="{% static 'images/placeholder.jpg' %}" data-real-src="{{request.user.channeluser.channelimg.url}}">
                         </div>
-                        <div class="channel-name">
+                        <div class="channel-name" style="display: flex; flex-direction: column; align-items: flex-start;">
                             <h4>{{request.user.channeluser.channelname}}</h4>
-                            <h6 style="">@{{request.user.channeluser.channelslug}}</h6>
-                            <label>{{request.user.channeluser.subscribers.count}} {% if request.get_full_path == 'channel/{{request.user.channeluser.id}}' %}true{% endif %} subscribers</label>
+                            <h6 style="margin-bottom: 25px;">@{{request.user.channeluser.channelslug}} &nbsp;&bull;&nbsp; <label>{{request.user.channeluser.subscribers.count}} {% if request.get_full_path == 'channel/{{request.user.channeluser.id}}' %}true{% endif %} subscribers</label> &nbsp;&bull;&nbsp;<label>{{user_videos_count}} videos</ </h6>
+                            <br>
+                            <label>{{request.user.channeluser.channeldescription}}</label>
                         </div>
                     </div>
                     <div class="right">

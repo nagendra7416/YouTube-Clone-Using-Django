@@ -57,43 +57,6 @@ def time_ago(value):
         return f'{time_difference.seconds // 60} minutes ago'
     else:
         return f'{time_difference.seconds} seconds ago'
-# def get_videos(request):
-#     engine = engines['django']
-#     page = request.GET.get('page')
-#     if page is None or not page.isdigit() or int(page) < 1:
-#         page = 1
-#     videos = Video.objects.all().order_by('-views')
-#     paginator = Paginator(videos, 6)
-
-#     try:
-#         videos_page = paginator.page(page)
-#     except EmptyPage:
-#         return JsonResponse({'error': 'No more posts available'})
-    
-#     serialized_videos = [
-#         {
-#             'id': video.id,
-#             'visibility': video.visibility,
-#             'title': video.title, 
-#             'author': video.author.channeluser.channelname,
-#             'author_image': video.author.channeluser.channelimg.url,
-#             'authorchannelurl': 'c/'+video.author.channeluser.channelslug,
-#             'image': video.image.url,
-#             'video': video.video.url,
-#             'duration': video.duration,
-#             'description': video.description,
-#             'published': time_ago(video.published),
-#             'views': format_views_as_K(video.views),
-#             'liked': video.liked.count(),
-#             'watchlater': video.watchlater.count(),
-#             'currentuser': request.user.channeluser.channelname,
-#             'currentuserchannelurl': 'channel/'+request.user.channeluser.id,
-#             }
-#         for video in videos_page
-#     ]
-
-#     return JsonResponse({'videos': serialized_videos})
-
 
 
 
@@ -115,6 +78,10 @@ def load_articles(request):
     data = [{'id': article.id, 'visibility': article.visibility, 'title': article.title, 'author': article.author.username, 'image': article.image.url, 'video': article.video.url, 'duration': article.duration, 'description': article.description, 'published': article.published, 'views': article.views} for article in articles]
     
     return JsonResponse({'videos': data})
+
+
+
+
 
 def format_video_views(views):
     return "{:,}".format(views)
@@ -183,8 +150,7 @@ def home(request):
     return render(request, 'home.html', context)
 
 
-def shorts(request, id):
-    shorts = get_object_or_404(Shorts, pk=id)
+def shorts(request):
     return render(request, 'shorts.html', {'shorts': shorts})
 
 
@@ -445,9 +411,10 @@ def channel(request, id):
     user_videos = Video.objects.filter(author=request.user).all()
     subscribers = Channel.objects.filter(subscribers=request.user).all()
     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
+    user_videos_count = user_videos.count()
 
     context = {'user_videos': user_videos, 'featured': featured, 'user': user,
-               'subscribers': subscribers, 'notifications': notifications}
+               'subscribers': subscribers, 'notifications': notifications, 'user_videos_count': user_videos_count}
     return render(request, 'channel/channel_home.html', context)
 
 
@@ -457,9 +424,10 @@ def channel_videos(request, id):
     user_videos = Video.objects.filter(author=request.user).all()
     subscribers = Channel.objects.filter(subscribers=request.user).all()
     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
+    user_videos_count = user_videos.count()
 
     context = {'user_videos': user_videos, 'featured': featured, 'user': user,
-               'subscribers': subscribers, 'notifications': notifications}
+               'subscribers': subscribers, 'notifications': notifications, 'user_videos_count': user_videos_count}
     return render(request, 'channel/channel_videos.html', context)
 
 
@@ -468,11 +436,14 @@ def channel_playlists(request, id):
     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
     subscribers = Channel.objects.filter(subscribers=request.user).all()
     user = get_object_or_404(Channel, id=id)
+    user_videos_count = Video.objects.filter(author=request.user).all().count()
+
     context = {
         'user': user,
         'playlists': playlists,
         'notifications': notifications,
         'subscribers': subscribers,
+        'user_videos_count': user_videos_count
     }
     return render(request, 'channel/channel_playlists.html', context)
 
@@ -483,12 +454,15 @@ def channel_channels(request, id):
     channels = Channel.objects.filter(subscribers=user.channeluser).all()
     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
     subscribers = Channel.objects.filter(subscribers=request.user).all()
+    user_videos_count = Video.objects.filter(author=request.user).all().count()
+
     context = {
         'user': user,
         'playlists': playlists,
         'channels': channels,
         'notifications': notifications,
         'subscribers': subscribers,
+        'user_videos_count': user_videos_count
     }
     return render(request, 'channel/channel_channels.html', context)
 
@@ -499,6 +473,7 @@ def channel_about(request, id):
     subscribers = Channel.objects.filter(subscribers=request.user).all()
     notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
     views = Video.objects.filter(author=request.user).all()
+    user_videos_count = user_videos.count()
     count = 0
     for i in views:
         count += i.views
@@ -509,6 +484,7 @@ def channel_about(request, id):
         'user': user,
         'subscribers': subscribers,
         'notifications': notifications,
+        'user_videos_count': user_videos_count
     }
     return render(request, 'channel/channel_about.html', context)
 
@@ -762,3 +738,46 @@ def delete_comment(request, id, comment_id):
 
 def nointernet(request):
     return render(request, 'nointernet.html')
+
+
+
+
+
+
+
+def get_video(request, id):
+    try: 
+        video = Video.objects.get(id=id)
+
+        video_data = {
+            'id': video.id,
+            'title': video.title,
+        }
+
+        return JsonResponse(video_data, safe=False)
+    except Video.DoesNotExist:
+        return JsonResponse({'error': 'video not found'}, status=404)
+
+
+
+
+def explore_videos(request):
+    videos = Video.objects.all().order_by('-views')[:100]
+    video_data = serializers.serialize('json', videos)
+
+    video_list = []
+    for video in videos:
+        video_dict = {
+            'id': video.id,
+            'title': video.title,
+            'author': video.author.channeluser.channelname,
+            'authorimg': 'http://localhost:8000'+video.author.channeluser.channelimg.url,
+            'image': 'http://localhost:8000'+video.image.url,
+            'duration': video.duration,
+            'views': format_views_as_K(video.views),
+            'published': time_ago(video.published),
+
+        }
+        video_list.append(video_dict)
+    return JsonResponse(video_list, safe=False)
+
