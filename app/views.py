@@ -58,6 +58,8 @@ def time_ago(value):
     else:
         return f'{time_difference.seconds} seconds ago'
 
+def format_views_as_comma(value):
+    return "{:,}".format(value)
 
 
 def video_title_suggestions(request):
@@ -211,21 +213,22 @@ def library(request):
     watchlatervideos = ''
     playlists = ''
     if request.user.is_authenticated:
-        playlists = Playlist.objects.filter(playlist_user=request.user).all()
-        profile = get_object_or_404(Channel, channeluser=request.user)
         users = HistoryVideo.objects.filter(his_user=request.user).all().order_by('-his_time')
         liked_videos = Video.objects.filter(liked=request.user).all()
+        watchlatervideos = Video.objects.filter(watchlater=request.user).all()
+        playlists = Playlist.objects.filter(playlist_user=request.user).all()
+        profile = get_object_or_404(Channel, channeluser=request.user)
         subscribers = Channel.objects.filter(subscribers=request.user).all()
         notifications = Notification.objects.filter(to_user=request.user, is_seen=False).all().order_by('-date')
-        watchlatervideos = Video.objects.filter(watchlater=request.user).all()
+        
 
     context = {
         'users': users,
         'liked_videos': liked_videos,
-        'subscribers': subscribers,
-        'notifications': notifications,
         'watchlatervideos': watchlatervideos,
         'playlists': playlists,
+        'subscribers': subscribers,
+        'notifications': notifications,
     }
     return render(request, 'library.html', context)
 
@@ -282,8 +285,7 @@ def watch(request, id):
     commentform = ''
     jsoncom = []
     notifications = ''
-    comments = something.objects.filter(
-        comment_video=video).all().order_by('-commented_on')
+    comments = something.objects.filter(comment_video=video).all().order_by('-commented_on')
     if comments:
         jsoncom = serializers.serialize('json', comments, ensure_ascii=False)
 
@@ -749,9 +751,23 @@ def get_video(request, id):
     try: 
         video = Video.objects.get(id=id)
 
+        comments = something.objects.filter(comment_video=video.id).all()
         video_data = {
             'id': video.id,
             'title': video.title,
+            'video': 'http://localhost:8000/'+video.video.url,
+            'duration': video.duration,
+            'views': video.views,
+            'liked': video.liked.all().count(),
+            'published': time_ago(video.published),
+            'description': video.description,
+
+            'author': video.author.channeluser.channelname,
+            'authorimg': 'http://localhost:8000/'+video.author.channeluser.channelimg.url,
+            'authorsubs': video.author.channeluser.subscribers.all().count(),
+
+            'comments': list(comments.values()),
+            'commentscount': comments.count()
         }
 
         return JsonResponse(video_data, safe=False)
@@ -776,8 +792,161 @@ def explore_videos(request):
             'duration': video.duration,
             'views': format_views_as_K(video.views),
             'published': time_ago(video.published),
+            'description': video.description,
 
         }
         video_list.append(video_dict)
     return JsonResponse(video_list, safe=False)
 
+
+
+
+    
+    
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import permissions
+
+@api_view(['GET'])
+def get_user_data(request):
+    user = request.user
+
+    user_videos = Video.objects.filter(author=user).all()
+
+    total_views = 0
+    for i in user_videos:
+        total_views += i.views
+
+    if user.is_authenticated:
+        user_data = {
+            'username': user.username,
+            'email': user.email,
+            'channeluser': user.channeluser.channelname,
+            'channelimage': 'http://localhost:8000'+user.channeluser.channelimg.url,
+            'channelid': user.channeluser.id,
+            'channelbanner': 'http://localhost:8000/'+user.channeluser.banner.url,
+            'channelslug': user.channeluser.channelslug,
+            'subscribers': user.channeluser.subscribers.all().count(),
+            'description': user.channeluser.channeldescription,
+            'joined': time_ago(user.channeluser.joined),
+        }
+
+        json_list = {
+            'user': user_data,
+            'total_views': total_views
+        }
+        response = JsonResponse(json_list)
+        response['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        return response
+    else:
+        return Response({'status': 'user is not authenticated'})
+    
+
+def sub_videos(request):
+    sub_channels = []
+    sub_videos = []
+
+    if request.user.is_authenticated:
+        sub_channels = Channel.objects.filter(subscribers=request.user)
+        sub_videos = Video.objects.filter(author__channeluser__in=sub_channels).all()
+        
+        video_list = []
+        for video in sub_videos:
+            video_dict = {
+                'id': video.id,
+                'title': video.title,
+                'author': video.author.channeluser.channelname,
+                'authorimg': 'http://localhost:8000'+video.author.channeluser.channelimg.url,
+                'image': 'http://localhost:8000'+video.image.url,
+                'duration': video.duration,
+                'views': format_views_as_K(video.views),
+                'published': time_ago(video.published),
+            }
+            video_list.append(video_dict)
+        random.shuffle(video_list)
+        response = JsonResponse(video_list, safe=False)
+        response['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        return response
+    else:
+        return JsonResponse({'error': 'user is not authenticated'})
+
+
+
+
+def liked_videos_api(request):
+    if request.user.is_authenticated:
+        videos = Video.objects.filter(liked=request.user).all()
+        video_list = []
+        for video in videos:
+            video_dict = {
+                'id': video.id,
+                'title': video.title,
+                'author': video.author.channeluser.channelname,
+                'authorimg': 'http://localhost:8000'+video.author.channeluser.channelimg.url,
+                'image': 'http://localhost:8000'+video.image.url,
+                'duration': video.duration,
+                'views': format_views_as_K(video.views),
+                'published': time_ago(video.published),
+            }
+            video_list.append(video_dict)
+
+        print(video_list)
+        random.shuffle(video_list)
+        response = JsonResponse(video_list, safe=False)
+        response['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        return response
+    else:
+        return JsonResponse({'error': 'error in fetching videos...'}, safe=False)
+
+
+
+def user_videos(request):
+    if request.user.is_authenticated:
+        videos = Video.objects.filter(author=request.user).all().order_by('-published')
+        video_list = []
+        for video in videos:
+            video_dict = {
+                'id': video.id,
+                'title': video.title,
+                'author': video.author.channeluser.channelname,
+                'authorimg': 'http://localhost:8000'+video.author.channeluser.channelimg.url,
+                'image': 'http://localhost:8000'+video.image.url,
+                'duration': video.duration,
+                'views': format_views_as_K(video.views),
+                'published': time_ago(video.published),
+            }
+            video_list.append(video_dict)
+
+        response_data = {
+            'videos': video_list,
+            'videos_count': len(video_list)
+        }
+        response = JsonResponse(response_data, safe=False)
+        response['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        return response
+    else:
+        return JsonResponse({'error': 'error in fetching user videos...'}, safe=False)
+
+def featured_video(request):
+    if request.user.is_authenticated:
+        videos = Video.objects.filter(author=request.user).order_by('-views').first()
+        video_list = []
+        
+        video_dict = {
+            'id': videos.id,
+            'title': videos.title,
+            'author': videos.author.channeluser.channelname,
+            'authorimg': 'http://localhost:8000'+videos.author.channeluser.channelimg.url,
+            'image': 'http://localhost:8000'+videos.image.url,
+            'duration': videos.duration,
+            'views': format_views_as_K(videos.views),
+            'video': 'http://localhost:8000/' + videos.video.url,
+            'published': time_ago(videos.published),
+        }
+        video_list.append(video_dict)
+
+        response = JsonResponse(video_list, safe=False)
+        response['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        return response
+    else:
+        return JsonResponse({'error': 'error in fetching user videos...'}, safe=False)

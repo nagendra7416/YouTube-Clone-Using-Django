@@ -27,7 +27,10 @@ class TimeAgoField(serializers.Field):
             return f'{time_difference.seconds} seconds ago'
 
 
-
+class VidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = '__all__'
 
 class VideoSerializer(serializers.ModelSerializer):
 

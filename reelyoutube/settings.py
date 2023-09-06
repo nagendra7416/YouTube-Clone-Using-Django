@@ -61,10 +61,26 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Or an appropriate engine
+SESSION_COOKIE_SECURE = False  # For development, set to True in production with HTTPS
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',  # Optional, for development purposes
+    'django.contrib.auth.backends.RemoteUserBackend',  # Optional, if using remote authentication
+)
+
+AUTH_USER_MODEL = 'auth.User'
 
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'

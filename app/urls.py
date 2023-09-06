@@ -1,15 +1,24 @@
 from django.urls import path
-from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, ReactView, load_articles, nointernet, video_title_suggestions, explore_videos, get_video
-
+from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, ReactView, load_articles, nointernet, video_title_suggestions, explore_videos, get_video, get_user_data, sub_videos, liked_videos_api, user_videos, featured_video
 
 urlpatterns = [
     path('', home, name=''),
     path('feed/shorts', shorts, name='shorts'),
     path('video-title-suggestions/', video_title_suggestions, name='video_title_suggestions'),
     # path('get_videos', get_videos, name='get_videos'),
+
     path('api', ReactView.as_view(), name='api'),
     path('api/get_video/<str:id>', get_video, name='get_video'),
+    path('api/sub_videos', sub_videos, name='sub_videos'),
+    path('api/get_user_data', get_user_data, name='get_user_data'),
     path('api/explore', explore_videos, name='explore_videos'),
+    path('api/liked_videos_api', liked_videos_api, name='liked_videos_api'),
+    path('api/user_videos', user_videos, name='user_videos'),
+    path('api/featured_video', featured_video, name='featured_video'),
+
+
+
+
     path('userapi', UserView.as_view(), name='userapi'),
     path('api/<str:id>', VideoView.as_view(), name='videoview'),
     path('login', login, name='login'),
