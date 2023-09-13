@@ -43,6 +43,7 @@ class VideoSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['author'] = instance.author.channeluser.channelname
+        representation['authorslug'] = instance.author.channeluser.channelslug
         representation['subs'] = instance.author.channeluser.subscribers.all().count()
         representation['duration'] = instance.duration
         representation['views'] = instance.views

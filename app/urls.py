@@ -1,11 +1,13 @@
 from django.urls import path
-from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, ReactView, load_articles, nointernet, video_title_suggestions, explore_videos, get_video, get_user_data, sub_videos, liked_videos_api, user_videos, featured_video
+from .views import shorts, author_channel_videos, channel, channel_videos, channel_about,explore, home, library, like, login, notifications, search, subscribe, subscriptions, unlike, unsubscribe, watch, author_channel, history, LikeNotification, liked_videos, watchlater_videos, author_channel_about, watchsubscribe, watchunsubscribe, channel_playlists, author_channel_playlists, channel_channels, author_channel_channels, like_comment, unlike_comment, APIView, VideoView, UserView, delete_comment, get_comments, ReactView, load_articles, nointernet, video_title_suggestions, explore_videos, get_video, get_user_data, sub_videos, liked_videos_api, user_videos, featured_video, user_liked, toggle_like, get_comments_json, toggle_subscribe, post_comment, library_videos_json, search_json, author_channel_json, user_channel_json
 
 urlpatterns = [
     path('', home, name=''),
     path('feed/shorts', shorts, name='shorts'),
     path('video-title-suggestions/', video_title_suggestions, name='video_title_suggestions'),
     # path('get_videos', get_videos, name='get_videos'),
+
+    path('api/<str:id>/get_comments_json', get_comments_json, name='get_comments_json'),
 
     path('api', ReactView.as_view(), name='api'),
     path('api/get_video/<str:id>', get_video, name='get_video'),
@@ -15,7 +17,19 @@ urlpatterns = [
     path('api/liked_videos_api', liked_videos_api, name='liked_videos_api'),
     path('api/user_videos', user_videos, name='user_videos'),
     path('api/featured_video', featured_video, name='featured_video'),
+    path('api/library_videos_json', library_videos_json, name='library_videos_json'),
+    path('api/user_liked/<str:id>', user_liked, name='user_liked'),
+    path('api/<str:id>/toggle_like', toggle_like, name='toggle_like'),
 
+    path('api/<str:id>/post_comment', post_comment, name='post_comment'),
+
+    path('api/<str:channelslug>/toggle_subscribe', toggle_subscribe, name='toggle_subscribe'),
+
+    path('api/search', search_json, name='search_json'),
+
+    path('api/<str:channelslug>', author_channel_json, name='author_channel_json'),
+
+    path('api/user_channel_json/<str:channelid>', user_channel_json, name='user_channel_json'),
 
 
 
